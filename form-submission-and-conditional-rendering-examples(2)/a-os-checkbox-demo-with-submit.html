@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ICS 211 OS Checkbox Demo With Submit and Conditional Rendering</title>
+    <script crossorigin src="https://unpkg.com/react@17/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="text/babel">
+      
+      const DisplayOS = ({ checkboxGroup }) => {
+        let allOS = ''; let plural = '';   
+                
+        for (const [os, isUsed] of Object.entries(checkboxGroup)) {
+          if (isUsed) {
+            if (allOS.length === 0) {
+              allOS += os.charAt(0).toUpperCase() + os.slice(1);
+            } else {
+              allOS += ', ' + os.charAt(0).toUpperCase() + os.slice(1);
+              plural = 's';
+            }
+          }
+        }
+
+        return (
+          <h1>You use the {allOS} Operating System{plural}.</h1>
+        );
+      }
+            
+      
+      const OSCheckboxDemo = () => {
+        const[ checkboxGroup, setCheckboxGroup ] =
+          React.useState({ linux: false, mac: false, windows: false });
+        
+        // state var for conditional rendering
+        const[ showForm, setShowForm ] = React.useState(true);
+
+        // make an array out of the key names, i.e. the OS's
+        const operatingSystems = Object.keys(checkboxGroup);
+      
+        const handleCheckbox = e => {
+          setCheckboxGroup({ ...checkboxGroup,
+            [e.target.value]: e.target.checked });
+        }
+
+        // new handler for form submission
+        const handleSubmit = e => {
+          e.preventDefault();
+          setShowForm(false);
+        }
+        
+        if ( showForm ) {
+          return (
+            <form onSubmit={handleSubmit}>
+              {/* added onSubmit event; registered handler */}
+              <fieldset>
+                <legend>Select which OS('s) you use:</legend>
+                { operatingSystems.map( os =>
+                  <React.Fragment key={os}>
+                    <label>
+                      <input type='checkbox' name='checkboxGroup' value={os}
+                        checked={checkboxGroup.os}
+                        onChange={handleCheckbox} />
+                      &nbsp;{os.charAt(0).toUpperCase() + os.slice(1)}
+                    </label>
+                    <br /><br />
+                  </React.Fragment>
+                )}
+                {/* add submit button which will cause onSubmit event */}
+                <input type='submit' value='Submit' />
+              </fieldset>
+            </form>
+          );
+        } else {
+          return <DisplayOS checkboxGroup={checkboxGroup} />
+        }
+      }
+      
+      ReactDOM.render(
+        <OSCheckboxDemo />,
+        document.getElementById('container')
+      );
+    </script>
+  </body>
+</html>

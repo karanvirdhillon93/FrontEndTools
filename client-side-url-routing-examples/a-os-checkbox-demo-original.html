@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ICS211 OS Checkbox Demo Using Material UI Form</title>
+    <script crossorigin src="https://unpkg.com/react/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom/umd/react-dom.development.js"></script>
+    <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script crossorigin src="https://unpkg.com/@material-ui/core/umd/material-ui.development.js"></script>
+    <!-- Fonts to support Material-UI -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <!-- Icons to support Material-UI -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  </head>
+  <body>
+    <div id="container"></div>
+    <script type="text/babel">
+      
+      const CheckboxForm = ({ checkboxGroup, handleCheckbox, handleSubmit }) => {
+        
+        const operatingSystems = Object.keys(checkboxGroup);
+
+        const { Button, Checkbox, FormGroup, FormControlLabel, FormControl, FormLabel } = MaterialUI;
+
+        
+        let enableSubmit = false;
+        for (const checked of Object.values(checkboxGroup)) {
+          if (checked) enableSubmit = true;
+        }
+        return (
+          <form onSubmit={handleSubmit}>
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Select which OS('s) you use:</FormLabel>
+              <FormGroup>
+              { operatingSystems.map( os =>
+                <React.Fragment key={os}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox checked={checkboxGroup.os} onChange={handleCheckbox} value={os} />}
+                    label={os.charAt(0).toUpperCase() + os.slice(1)}
+                  />
+                  <br /><br />
+                </React.Fragment>
+              )}
+              {enableSubmit
+                ? <Button variant="contained" color="primary" type="submit">Submit</Button>
+                : <Button variant="contained" color="primary" type="submit" disabled>Submit</Button>
+              }
+              </FormGroup>
+            </FormControl>
+          </form>
+        );
+      }
+      
+      const DisplayOS = ({ checkboxGroup }) => {
+        let allOS = ''; let plural = '';   
+                
+        for (const [os, isChecked] of Object.entries(checkboxGroup)) {
+          if (isChecked) {
+            if (allOS.length === 0) {
+              allOS += os.charAt(0).toUpperCase() + os.slice(1);
+            } else {
+              allOS += ', ' + os.charAt(0).toUpperCase() + os.slice(1);
+              plural = 's';
+            }
+          }
+        }
+
+        return (
+          <h1>You use the {allOS} Operating System{plural}.</h1>
+        );
+      }
+            
+      
+      const OSCheckboxDemo = () => {
+        const[ checkboxGroup, setCheckboxGroup ] =
+          React.useState({ linux: false, mac: false, windows: false });
+
+        const[ showForm, setShowForm ] = React.useState(true);
+
+        // handlers remain here in this Component
+        const handleCheckbox = e => {
+          setCheckboxGroup({ ...checkboxGroup,
+            [e.target.value]: e.target.checked });
+        }
+
+        const handleSubmit = e => {
+          e.preventDefault();
+          setShowForm(false);
+        }
+        
+        return (
+          showForm
+            ? <CheckboxForm
+                checkboxGroup={checkboxGroup}
+                handleCheckbox={handleCheckbox}
+                handleSubmit={handleSubmit} />
+            : <DisplayOS checkboxGroup={checkboxGroup} />
+        );
+      }
+      
+      ReactDOM.render(
+        <OSCheckboxDemo />,
+        document.getElementById('container')
+      );
+    </script>
+  </body>
+</html>
